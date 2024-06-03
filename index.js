@@ -31,7 +31,13 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // await client.connect();
+    const reviewsCollection = client.db("bookStoreDB").collection('reviews')
 
+    app.get('/reviews', async (req, res) => {
+      const cursor = reviewsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
    
     // await client.db("admin").command({ ping: 1 });
