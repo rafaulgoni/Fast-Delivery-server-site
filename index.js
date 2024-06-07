@@ -32,7 +32,53 @@ async function run() {
   try {
     // await client.connect();
     const bookCollection = client.db("bookStoreDB").collection('book')
+    const usersCollection = client.db("bookStoreDB").collection('users')
     const reviewsCollection = client.db("bookStoreDB").collection('reviews')
+
+
+    app.get('/users/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let publicUser = false;
+      if (user) {
+        publicUser = user?.Role === 'publicUser';
+      }
+      res.send({ publicUser });
+    })
+
+    app.get('/users/deliveryMen/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let deliveryMen = false;
+      if (user) {
+        deliveryMen = user?.Role === 'deliveryMen';
+      }
+      res.send({ deliveryMen });
+    })
+
+    app.get('/users/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.Role === 'admin';
+      }
+      res.send({ admin });
+    })
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email }
+      const existingUser = await usersCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: 'user already exists', insertedId: null })
+      }
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
 
     app.put('/book/:id', async (req, res) => {
       const id = req.params.id;
@@ -68,8 +114,8 @@ async function run() {
     });
 
     app.post('/book', async (req, res) => {
-      const newService = req.body;
-      const result = await bookCollection.insertOne(newService);
+      const newBook = req.body;
+      const result = await bookCollection.insertOne(newBook);
       res.send(result);
     });
 
