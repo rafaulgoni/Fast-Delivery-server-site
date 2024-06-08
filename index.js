@@ -35,6 +35,34 @@ async function run() {
     const usersCollection = client.db("bookStoreDB").collection('users')
     const reviewsCollection = client.db("bookStoreDB").collection('reviews')
 
+    app.put('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updatedCard = req.body;
+      const Card = {
+        $set: {
+          ...updatedCard
+        }
+      }
+      const result = await usersCollection.updateOne(filter, Card, options);
+      res.send(result);
+    });
+
+    app.get('/users', async (req, res) => {
+      const cursor = usersCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get('/users', async (req, res) => {
+      let query = {}
+      if (req.query?.Role) {
+        query = { Role: req.query.Role }
+      }
+      const result = await usersCollection.find(query).toArray();
+      res.send(result)
+    })
 
     app.get('/users/user/:email', async (req, res) => {
       const email = req.params.email;
