@@ -34,6 +34,13 @@ async function run() {
     const bookCollection = client.db("bookStoreDB").collection('book')
     const usersCollection = client.db("bookStoreDB").collection('users')
     const reviewsCollection = client.db("bookStoreDB").collection('reviews')
+    const deliveryMenCollection = client.db("bookStoreDB").collection('deliveryMen')
+
+    app.post('/deliveryMen', async (req, res) => {
+      const newBook = req.body;
+      const result = await deliveryMenCollection.insertOne(newBook);
+      res.send(result);
+    });
 
     app.put('/users/:id', async (req, res) => {
       const id = req.params.id;
@@ -55,7 +62,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get('/users', async (req, res) => {
+    app.get('/userDeliveryMen', async (req, res) => {
       let query = {}
       if (req.query?.Role) {
         query = { Role: req.query.Role }
@@ -153,6 +160,15 @@ async function run() {
       const result = await bookCollection.deleteOne(query);
       res.send(result);
     });
+
+    app.get('/booking', async (req, res) => {
+      let query = {}
+      if (req.query?.BookingStatus) {
+        query = { BookingStatus: req.query.BookingStatus }
+      }
+      const result = await bookCollection.find(query).toArray();
+      res.send(result)
+    })
 
 
     app.get('/reviews', async (req, res) => {
