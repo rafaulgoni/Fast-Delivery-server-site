@@ -36,6 +36,12 @@ async function run() {
     const reviewsCollection = client.db("bookStoreDB").collection('reviews')
     const deliveryMenCollection = client.db("bookStoreDB").collection('deliveryMen')
 
+    app.get('/deliveryMen', async (req, res) => {
+      const cursor = deliveryMenCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.post('/deliveryMen', async (req, res) => {
       const newBook = req.body;
       const result = await deliveryMenCollection.insertOne(newBook);
